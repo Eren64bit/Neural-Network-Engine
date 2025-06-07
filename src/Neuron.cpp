@@ -2,10 +2,6 @@
 
 //δ=(output−target)⋅output⋅(1−output)
 
-double Neuron::delta(double target, double output) {
-    
-}
-
 Neuron::Neuron(int inpt) {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -22,7 +18,11 @@ double Neuron::sigmoid(double x) {
     return (1/(1 + (exp(-x))));
 }
 
-double Neuron::dot(std::vector<double>& a, std::vector<double>& b) {
+double Neuron::delta(double output, double target) {
+    return (output - target) * output * (1 - output);
+}
+
+double Neuron::dot(const std::vector<double>& a, const std::vector<double>& b) {
     double result = 0.0;
     for (int i = 0; i < a.size(); i++) {
         result += a[i] * b[i];
@@ -30,10 +30,24 @@ double Neuron::dot(std::vector<double>& a, std::vector<double>& b) {
     return result;
 }
 
-double Neuron::forward(std::vector<double> inputV) {
+double Neuron::forward(const std::vector<double>& inputV) {
     if (inputV.size() != weight.size())
         throw std::runtime_error("Input and weight sizes do not match!");
 
     double sum = dot(inputV, weight) + bias;
     return sigmoid(sum);
+}
+
+void Neuron::train(const std::vector<double>& inpt, double target, double learningRate) {
+    if (inpt.size() != weight.size())
+        throw std::runtime_error("error: Cannot train neuron input and weight size does not match up");
+
+    double output = forward(inpt);
+    double dlt = delta(output, target);
+
+    for (int i = 0; i < weight.size(); i++) {
+        weight[i] -= learningRate * dlt * inpt[i];
+    }
+
+    bias -= learningRate * dlt;
 }

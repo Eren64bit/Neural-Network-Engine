@@ -15,3 +15,10 @@ std::vector<double> Layer::forward(const std::vector<double>& input) {
     }
     return outputs;
 }
+
+void Layer::train(const std::vector<double>& input, const std::vector<double>& target, double learningRate) {
+    if (neurons.size() != target.size()) throw std::runtime_error("error: input and target size does not match up");
+    for (int i = 0; i < input.size(); i++) {
+        neurons[i]->train(input, target[i], learningRate);
+    }
+}
