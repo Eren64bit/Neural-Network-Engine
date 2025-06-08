@@ -6,6 +6,7 @@
 #include <memory>
 #include <random>
 
+
 class Neuron {
 private:
     std::vector<double> input;
@@ -17,13 +18,21 @@ private:
 
     double dot(const std::vector<double>& a, const std::vector<double>& b);
     double sigmoid(double a);
-    double deltaE(double output, double target); // düzeltildi
+    double deltaE(double output, double target);
+    void calculateWeight(const std::vector<double>& inpt, double learningRate);
 public:
     Neuron(int numInputs);
 
-    double forward(const std::vector<double>& inputV); // düzeltildi
-    void train(const std::vector<double>& input, double target, double learningRate); // düzeltildi
+    double forward(const std::vector<double>& inputV); 
+    void train(const std::vector<double>& input, double target, double learningRate); 
+
+
+
     void computeHiddenLayerDelta(const std::vector<std::unique_ptr<Neuron>>& nextLayer, int neuronIndexInPrevLayer);
+    void applyWeightUpdate(const std::vector<double>& inpt, double learningRate);
+
+
+
     double readDelta() const {return delta;}
     double getWeight(int index) const {return weight[index];}
 };

@@ -22,3 +22,4 @@ void Layer::train(const std::vector<double>& input, const std::vector<double>& t
         neurons[i]->train(input, target[i], learningRate);
     }
 }
+

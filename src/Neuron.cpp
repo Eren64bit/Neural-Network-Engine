@@ -14,6 +14,14 @@ Neuron::Neuron(int inpt) {
     bias = dist(gen);
 }
 
+void Neuron::calculateWeight(const std::vector<double>& inpt, double learningRate) {
+    for (int i = 0; i < weight.size(); i++) {
+        weight[i] -= learningRate * delta * inpt[i];
+    }
+
+    bias -= learningRate * delta;
+}
+
 double Neuron::sigmoid(double x) {
     return (1/(1 + (exp(-x))));
 }
@@ -40,18 +48,18 @@ double Neuron::forward(const std::vector<double>& inputV) {
     return output_i;
 }
 
-void Neuron::train(const std::vector<double>& inpt, double target, double learningRate) {
+void Neuron::train(const std::vector<double>& inpt, double target, double learningRate) { // for output layer
     if (inpt.size() != weight.size())
         throw std::runtime_error("error: Cannot train neuron input and weight size does not match up");
 
     delta = deltaE(output_i, target);
 
-    for (int i = 0; i < weight.size(); i++) {
-        weight[i] -= learningRate * delta * inpt[i];
-    }
+    calculateWeight(inpt, learningRate);
 
-    bias -= learningRate * delta;
 }
+
+
+//HIDDEN LAYER CALC
 
 void Neuron::computeHiddenLayerDelta(const std::vector<std::unique_ptr<Neuron>>& nextLayer, int neuronIndexInPrevLayer) {
     double sum = 0.0;
@@ -60,4 +68,8 @@ void Neuron::computeHiddenLayerDelta(const std::vector<std::unique_ptr<Neuron>>&
         sum += nextNeuron->readDelta() * nextNeuron->getWeight(neuronIndexInPrevLayer);
     }
     delta = sum * output_i * (1 - output_i);
+}
+
+void Neuron::applyWeightUpdate(const std::vector<double>& inpt, double learningRate) {
+    calculateWeight(inpt, learningRate);
 }

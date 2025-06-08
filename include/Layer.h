@@ -10,6 +10,8 @@ public:
 
     void train(const std::vector<double>& input, const std::vector<double>& target, double learningRate);
 
+    void computeHiddenLayer();
+
     int neuronCount() const {return neurons.size();}
     
 };
