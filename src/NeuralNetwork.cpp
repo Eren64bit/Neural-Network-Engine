@@ -22,12 +22,13 @@ std::vector<double> NeuralNetwork::forward(const std::vector<double>& input) {
     return output;
 }
 
-/*İlk olarak giriş input vektörünü alır.
+std::vector<double> NeuralNetwork::kickStartNet(const std::vector<double>& input, const std::vector<double>& target,double learningRate) {
+    std::vector<std::vector<double>> activision;
+    activision.push_back(input);
+    for (int i = 0; i < NeuralNet.size(); i++) {
+        activision.push_back(NeuralNet[i]->forward(activision[i]));
+        if (i == NeuralNet.size() - 1) NeuralNet[i]->train(activision[i], target, learningRate);
+    }
+    return activision.back();
+}
 
-İlk Layer'a gönderir → layer forward işlemi yapar → bir output üretir.
-
-Bu output, sıradaki layer’a input olarak gönderilir.
-
-Bu işlem tüm layer’lar bitene kadar devam eder.
-
-Sonucun çıktısı return edilir.*/
