@@ -9,17 +9,35 @@ Layer::Layer(int numNeurons, int numInputsPerNeuron) {
 }
 
 std::vector<double> Layer::forward(const std::vector<double>& input) {
-    std::vector<double> outputs;
+    lastOutput.clear();
     for (const auto& neuron : neurons) {
-        outputs.push_back(neuron->forward(input));
+        lastOutput.push_back(neuron->forward(input));
     }
-    return outputs;
+    return lastOutput;
 }
 
-void Layer::train(const std::vector<double>& input, const std::vector<double>& target, double learningRate) {
-    if (neurons.size() != target.size()) throw std::runtime_error("error: input and target size does not match up");
-    for (int i = 0; i < input.size(); i++) {
-        neurons[i]->train(input, target[i], learningRate);
+std::vector<double> Layer::computeOutputLayerDeltas(const std::vector<double>& target) {
+    std::vector<double> deltas;
+    for (int i = 0; i < neurons.size(); i++) {
+        double output = lastOutput[i];
+        double error = output - target[i];
+        double delta = error * output * (1 - output);
+        neurons[i]->setDelta(delta);
+        deltas.push_back(delta);
+    }
+    return deltas;
+}
+
+
+void Layer::computeHiddenLayerDeltas(const Layer& nexLayer) {
+    for (int i = 0; i < neurons.size(); i++) {
+        neurons[i]->computeHiddenLayerDelta(nexLayer.neurons, i);
+    }
+}
+
+void Layer::applyWeightUpdate(const std::vector<double>& input, double learningRate) {
+    for (int i = 0; i < neurons.size(); i++) {
+        neurons[i]->applyWeightUpdate(input, learningRate);
     }
 }
 

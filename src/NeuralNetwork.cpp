@@ -22,13 +22,27 @@ std::vector<double> NeuralNetwork::forward(const std::vector<double>& input) {
     return output;
 }
 
-std::vector<double> NeuralNetwork::kickStartNet(const std::vector<double>& input, const std::vector<double>& target,double learningRate) {
+std::vector<double> NeuralNetwork::kickStartNet(const std::vector<double>& input, const std::vector<double>& target, double learningRate) {
     std::vector<std::vector<double>> activision;
     activision.push_back(input);
+
+    // Forward pass
     for (int i = 0; i < NeuralNet.size(); i++) {
         activision.push_back(NeuralNet[i]->forward(activision[i]));
-        if (i == NeuralNet.size() - 1) NeuralNet[i]->train(activision[i], target, learningRate);
     }
-    return activision.back();
+
+    // Output layer delta + weight update
+    int lastIdx = NeuralNet.size() - 1;
+    NeuralNet[lastIdx]->computeOutputLayerDeltas(target);
+    NeuralNet[lastIdx]->applyWeightUpdate(activision[lastIdx], learningRate);
+
+    // Hidden layers (geri doğru)
+    for (int i = lastIdx - 1; i >= 0; i--) {
+        NeuralNet[i]->computeHiddenLayerDeltas(*NeuralNet[i + 1]);
+        NeuralNet[i]->applyWeightUpdate(activision[i], learningRate);
+    }
+
+    return activision.back(); // output
 }
+
 

@@ -34,5 +34,9 @@ public:
 
 
     double readDelta() const {return delta;}
+    void setDelta(double i) {this->delta = i;}
+
     double getWeight(int index) const {return weight[index];}
+
+    
 };
